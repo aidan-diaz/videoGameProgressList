@@ -1,3 +1,6 @@
+//username aidan83diaz
+//password games
+
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
@@ -5,8 +8,8 @@ const MongoClient = require('mongodb').MongoClient
 
 var db, collection;
 
-const url = "mongodb+srv://demo:demo@cluster0-q2ojb.mongodb.net/test?retryWrites=true";
-const dbName = "demo";
+const url = "mongodb+srv://aidan83diaz:games@cluster0.mpdbm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const dbName = "videogames";
 
 app.listen(3000, () => {
     MongoClient.connect(url, { useNewUrlParser: true, useUnifiedTopology: true }, (error, client) => {
@@ -24,25 +27,25 @@ app.use(bodyParser.json())
 app.use(express.static('public'))
 
 app.get('/', (req, res) => {
-  db.collection('messages').find().toArray((err, result) => {
+  db.collection('games').find().sort({upVote: -1}).toArray((err, result) => {
     if (err) return console.log(err)
-    res.render('index.ejs', {messages: result})
+    res.render('index.ejs', {submittedGames: result})
   })
 })
 
-app.post('/messages', (req, res) => {
-  db.collection('messages').insertOne({name: req.body.name, msg: req.body.msg, thumbUp: 0, thumbDown:0}, (err, result) => {
+app.post('/videoGames', (req, res) => {
+  db.collection('games').insertOne({videoGameName: req.body.videoGameName, gameSystem: req.body.gameSystem, upVote: 0}, (err, result) => {
     if (err) return console.log(err)
     console.log('saved to database')
     res.redirect('/')
   })
 })
 
-app.put('/messages', (req, res) => {
-  db.collection('messages')
-  .findOneAndUpdate({name: req.body.name, msg: req.body.msg}, {
+app.put('/thumbsUp', (req, res) => {
+  db.collection('games')
+  .findOneAndUpdate({videoGameName: req.body.videoGameName, gameSystem: req.body.gameSystem}, {
     $set: {
-      thumbUp:req.body.thumbUp + 1
+      upVote:req.body.upVote + 1
     }
   }, {
     sort: {_id: -1},
@@ -53,8 +56,23 @@ app.put('/messages', (req, res) => {
   })
 })
 
-app.delete('/messages', (req, res) => {
-  db.collection('messages').findOneAndDelete({name: req.body.name, msg: req.body.msg}, (err, result) => {
+app.put('/thumbsDown', (req, res) => {
+  db.collection('games')
+  .findOneAndUpdate({videoGameName: req.body.videoGameName, gameSystem: req.body.gameSystem}, {
+    $set: {
+      upVote:req.body.upVote - 1
+    }
+  }, {
+    sort: {_id: -1},
+    upsert: true
+  }, (err, result) => {
+    if (err) return res.send(err)
+    res.send(result)
+  })
+})
+
+app.delete('/deleteGame', (req, res) => {
+  db.collection('games').findOneAndDelete({videoGameName: req.body.videoGameName, gameSystem: req.body.gameSystem}, (err, result) => {
     if (err) return res.send(500, err)
     res.send('Message deleted!')
   })
