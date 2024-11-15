@@ -34,18 +34,18 @@ app.get('/', (req, res) => {
 })
 
 app.post('/videoGames', (req, res) => {
-  db.collection('games').insertOne({videoGameName: req.body.videoGameName, gameSystem: req.body.gameSystem, upVote: 0}, (err, result) => {
+  db.collection('games').insertOne({videoGameName: req.body.videoGameName, gameSystem: req.body.gameSystem, completed: false}, (err, result) => {
     if (err) return console.log(err)
     console.log('saved to database')
     res.redirect('/')
   })
 })
 
-app.put('/thumbsUp', (req, res) => {
+app.put('/favorite', (req, res) => {
   db.collection('games')
   .findOneAndUpdate({videoGameName: req.body.videoGameName, gameSystem: req.body.gameSystem}, {
     $set: {
-      upVote:req.body.upVote + 1
+      completed: true
     }
   }, {
     sort: {_id: -1},
@@ -56,11 +56,11 @@ app.put('/thumbsUp', (req, res) => {
   })
 })
 
-app.put('/thumbsDown', (req, res) => {
+app.put('/unfavorite', (req, res) => {
   db.collection('games')
   .findOneAndUpdate({videoGameName: req.body.videoGameName, gameSystem: req.body.gameSystem}, {
     $set: {
-      upVote:req.body.upVote - 1
+      completed: false
     }
   }, {
     sort: {_id: -1},

@@ -42,6 +42,10 @@ section {
   gap: 40px;
 }
 
+main {
+  flex-direction: row;
+}
+
 /* HOVER EFFECTS */
 
 .fa-thumbs-up:hover,
@@ -49,4 +53,8 @@ section {
 .fa-trash:hover {
   cursor: pointer;
   color: darkgray;
+}
+
+ul {
+  list-style: none;
 }
