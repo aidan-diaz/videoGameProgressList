@@ -1,6 +1,3 @@
-//username aidan83diaz
-//password games
-
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
